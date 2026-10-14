@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+for(const m of html.matchAll(/(?:src|href|data-image)="(?!https?:|tel:|mailto:|#)([^"]+)"/g))assert(fs.existsSync(path.join(root,m[1])),'Missing '+m[1]);
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size,'Duplicate IDs');
+for(const m of html.matchAll(/href="#([^"]+)"/g))assert(ids.includes(m[1]),'Missing anchor '+m[1]);
+for(const word of ['SPIRIT EVENTS','MAKE YOUR','Professional Sound Systems','Tents and Canopies','Chairs and Event Furniture','Stage Setup','Event Production','bookingForm','256756408204','256759100008','jimmy.genza'])assert(html.includes(word),'Missing '+word);
+const voids=new Set('area base br col embed hr img input link meta param source track wbr path'.split(' ')),stack=[];
+for(const m of html.matchAll(/<(\/?)([a-z][a-z0-9-]*)\b[^>]*?(\/?)>/gi)){const tag=m[2].toLowerCase();if(voids.has(tag)||m[3])continue;if(m[1])assert.equal(stack.pop(),tag,'Unbalanced '+tag);else stack.push(tag);}assert.equal(stack.length,0);
+for(const file of ['index.html','src/input.css','public/js/main.js','README.md','package.json','tailwind.config.js'])assert(!/fidelity|healthcare|medical|patient|prescription|appointment|laboratory/i.test(fs.readFileSync(path.join(root,file),'utf8')),'Old content in '+file);
+for(const file of ['main.js','config.js'])new Function(fs.readFileSync(path.join(root,'public/js',file),'utf8'));
+console.log('PASS: assets, anchors, HTML structure, brand content and JavaScript syntax.');
+require('./booking-verify');

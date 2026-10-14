@@ -1,0 +1,4 @@
+const sharp=require('sharp');const path=require('path');
+const jobs=[{src:'img5.jpg',out:'event-mixer',crop:{left:0,top:190,width:576,height:740}},{src:'img4.jpg',out:'event-rack',crop:{left:0,top:210,width:576,height:700}},{src:'owWqSo4DeAzzDRq9gQFshcUDvfwSriWEBEBmFQ~tplv-tiktok-shrink_640_640.jpeg',out:'event-speakers',crop:{left:0,top:180,width:360,height:390}},{src:'jimmy.genza_7686365172998409492.webp',out:'event-performance'}];
+// Optimize supplied photographs without upscaling or modifying the originals.
+(async()=>{for(const j of jobs){let p=sharp(path.join(__dirname,'../public/img',j.src));if(j.crop)p=p.extract(j.crop);await p.resize({width:1080,withoutEnlargement:true}).webp({quality:82}).toFile(path.join(__dirname,'../public/img',j.out+'.webp'));console.log('Optimized '+j.out);}})().catch(e=>{console.error(e);process.exitCode=1;});
